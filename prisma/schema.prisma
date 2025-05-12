@@ -33,5 +33,66 @@ model Product {
 
 // we run the following commands to:
 // 1) create the db locally -> npx prisma generate
-// 2) migrate the db to the server -> npx prisma migrate dev --name init
+// 2) migrate the db to the server -> npx prisma migrate dev --name init (after name we put what we have change so init is like a comment)
 // 3) check the db in a new localhost -> npx prisma studio
+
+model User {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String    @default("NO_NAME")
+  email         String    @unique(map: "user_email_idx")
+  emailVerified DateTime? @db.Timestamp(6)
+  image         String?
+  password      String?
+  role          String    @default("user")
+  address       Json?     @db.Json
+  paymentMethod String?
+  createdAt     DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime  @updatedAt
+  account       Account[]
+  session       Session[]
+}
+
+model Account {
+  userId            String  @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // We connect the Account model with the User one with the above 2 fields as reference and we put also the account into the User model
+  // we take the following provider name ex. Google and its id and combine them to make a primary key 
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @id
+  userId       String   @db.Uuid
+  expires      DateTime @db.Timestamp(6)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// Models User, Account, Session and VerficationToken were taken from the following documentation and modified a little to match the projects needs
+// https://authjs.dev/getting-started/adapters/prisma
+// after putting these new models, we should generate again the prisma and migrate it so that the tables are created
