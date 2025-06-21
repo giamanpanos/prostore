@@ -15,26 +15,28 @@ datasource db {
 }
 
 model Product {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String
-  slug        String   @unique(map: "product_slug_idx")
+  slug        String      @unique(map: "product_slug_idx")
   category    String
   images      String[]
   brand       String
   description String
   stock       Int
-  price       Decimal  @default(0) @db.Decimal(12, 2)
-  rating      Decimal  @default(0) @db.Decimal(3, 2)
-  numReviews  Int      @default(0)
-  isFeatured  Boolean  @default(false)
+  price       Decimal     @default(0) @db.Decimal(12, 2)
+  rating      Decimal     @default(0) @db.Decimal(3, 2)
+  numReviews  Int         @default(0)
+  isFeatured  Boolean     @default(false)
   banner      String?
-  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  createdAt   DateTime    @default(now()) @db.Timestamp(6)
+  OrderItem   OrderItem[]
 }
 
 // we run the following commands to:
 // 1) create the db locally -> npx prisma generate
 // 2) migrate the db to the server -> npx prisma migrate dev --name init (after name we put what we have change so init is like a comment)
 // 3) check the db in a new localhost -> npx prisma studio
+// Every time we change this file, we should run the above commands to update the database
 
 model User {
   id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -50,6 +52,8 @@ model User {
   updatedAt     DateTime  @updatedAt
   account       Account[]
   session       Session[]
+  cart          Cart[]
+  Order         Order[]
 }
 
 model Account {
@@ -96,3 +100,51 @@ model VerificationToken {
 // Models User, Account, Session and VerficationToken were taken from the following documentation and modified a little to match the projects needs
 // https://authjs.dev/getting-started/adapters/prisma
 // after putting these new models, we should generate again the prisma and migrate it so that the tables are created
+
+model Cart {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String?  @db.Uuid
+  sessionCartId String
+  items         Json[]   @default([]) @db.Json
+  itemsPrice    Decimal  @db.Decimal(12, 2)
+  totalPrice    Decimal  @db.Decimal(12, 2)
+  shippingPrice Decimal  @db.Decimal(12, 2)
+  taxPrice      Decimal  @db.Decimal(12, 2)
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// We put the Cart model and connected it with the User one
+
+model Order {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String      @db.Uuid
+  shippingAddress Json        @db.Json
+  paymentMethod   String
+  paymentResult   Json?       @db.Json // what comes back from the payment provider
+  itemsPrice      Decimal     @db.Decimal(12, 2)
+  shippingPrice   Decimal     @db.Decimal(12, 2)
+  taxPrice        Decimal     @db.Decimal(12, 2)
+  totalPrice      Decimal     @db.Decimal(12, 2)
+  isPaid          Boolean     @default(false)
+  paidAt          DateTime?   @db.Timestamp(6)
+  isDelivered     Boolean     @default(false)
+  deliveredAt     DateTime?   @db.Timestamp(6)
+  createdAt       DateTime    @default(now()) @db.Timestamp(6)
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderitems      OrderItem[]
+}
+
+model OrderItem {
+  orderId   String  @db.Uuid
+  productId String  @db.Uuid
+  qty       Int
+  price     Decimal @db.Decimal(12, 2)
+  name      String
+  slug      String
+  image     String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([orderId, productId], map: "order_items_orderId_productId_pk") // we make the id from the orderId and productId (we should have a unique field) and in the map we put the name of it
+}
