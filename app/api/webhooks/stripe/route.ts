@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { updateOrderToPaid } from "@/lib/actions/order.actions";
 
+// We have added a webhook to stripe dashboard for the charge.succeeded event and we STRIPE_WEBHOOK_SECRET straight to the vercel env
+
 export async function POST(req: NextRequest) {
   // Build the webhook event
   const event = await Stripe.webhooks.constructEvent(
