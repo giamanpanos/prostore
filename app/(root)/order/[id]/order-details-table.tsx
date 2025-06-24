@@ -38,7 +38,8 @@ const OrderDetailsTable = ({
   isAdmin,
   stripeClientSecret,
 }: {
-  order: Order;
+  // the below type is to omit the payment result from Order type
+  order: Omit<Order, "paymentResult">;
   paypalClientId: string;
   isAdmin: boolean;
   stripeClientSecret: string | null;

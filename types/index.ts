@@ -19,7 +19,7 @@ export type Product = z.infer<typeof insertProductSchema> & {
 
 export type Cart = z.infer<typeof insertCartSchema>;
 export type CartItem = z.infer<typeof cartItemSchema>;
-export type shippingAddress = z.infer<typeof shippingAddressSchema>;
+export type ShippingAddress = z.infer<typeof shippingAddressSchema>;
 export type OrderItem = z.infer<typeof insertOrderItemSchema>;
 export type Order = z.infer<typeof insertOrderSchema> & {
   id: string;
@@ -30,6 +30,7 @@ export type Order = z.infer<typeof insertOrderSchema> & {
   deliveredAt: Date | null;
   orderitems: OrderItem[];
   user: { name: string; email: string };
+  paymentResult: PaymentResult;
 };
 
 // The keys we have used in the last object are columns in the database that will not be received from either the form or the session (userId) and so they are not included in the schema (no need for validation) but they should beincluded in the types.
