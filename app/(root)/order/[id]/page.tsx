@@ -22,6 +22,7 @@ const OrderDetailsPage = async (props: {
 
   const session = await auth();
 
+  // We need to initiate it
   let client_secret = null;
 
   // Check if is not paid and using stripe
