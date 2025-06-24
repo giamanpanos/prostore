@@ -7,11 +7,13 @@ import {
   insertOrderSchema,
   insertOrderItemSchema,
   paymentResultSchema,
+  insertReviewSchema,
 } from "@/lib/validators";
 
 export type Product = z.infer<typeof insertProductSchema> & {
   id: string;
   rating: string;
+  numReviews: number;
   createdAt: Date;
 };
 
@@ -33,3 +35,9 @@ export type Order = z.infer<typeof insertOrderSchema> & {
 // The keys we have used in the last object are columns in the database that will not be received from either the form or the session (userId) and so they are not included in the schema (no need for validation) but they should beincluded in the types.
 
 export type PaymentResult = z.infer<typeof paymentResultSchema>;
+
+export type Review = z.infer<typeof insertReviewSchema> & {
+  id: string;
+  createdAt: Date;
+  user?: { name: string };
+};
