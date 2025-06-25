@@ -12,7 +12,7 @@ import { isRedirectError } from "next/dist/client/components/redirect";
 import { hashSync } from "bcrypt-ts-edge";
 import { prisma } from "@/db/prisma";
 import { formatError } from "../utils";
-import { shippingAddress } from "@/types";
+import { ShippingAddress } from "@/types";
 import { z } from "zod";
 import { PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
@@ -101,7 +101,7 @@ export async function getUserById(userId: string) {
 }
 
 // Update the user's address
-export async function updateUserAddress(data: shippingAddress) {
+export async function updateUserAddress(data: ShippingAddress) {
   try {
     const session = await auth();
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { shippingAddress } from "@/types";
+import { ShippingAddress } from "@/types";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useTransition } from "react";
@@ -22,7 +22,7 @@ import { ArrowRight, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { updateUserAddress } from "@/lib/actions/user.actions";
 
-const ShippingAddressForm = ({ address }: { address: shippingAddress }) => {
+const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
   const router = useRouter();
   const { toast } = useToast();
 
