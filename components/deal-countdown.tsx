@@ -5,8 +5,12 @@ import { Button } from "./ui/button";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-// Static target date (replace with desired date)
-const TARGET_DATE = new Date("2025-07-31T00:00:00");
+// Static target date (replace with desired date) -> this is to put a specific date
+// const TARGET_DATE = new Date("2025-07-31T00:00:00");
+
+// This is to receive the last day of current month
+const date = new Date();
+const TARGET_DATE = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
 // Function to calculate the time remaining
 const calculateTimeRemaining = (targetDate: Date) => {
